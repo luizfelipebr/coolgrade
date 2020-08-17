@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.validation.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
+import br.ucamcampos.coolgrade.domain.Student;
 import br.ucamcampos.coolgrade.services.validation.StudentUpdate;
 
 import javax.validation.constraints.NotEmpty;
@@ -26,11 +27,10 @@ public class StudentDTO implements Serializable {
 	public StudentDTO() {
 	}
 
-	public StudentDTO(Integer id, String name, String email) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.email = email;
+	public StudentDTO(Student obj) {
+		this.id = obj.getId();
+		this.name = obj.getName();
+		this.email = obj.getEmail();
 	}
 
 	public Integer getId() {

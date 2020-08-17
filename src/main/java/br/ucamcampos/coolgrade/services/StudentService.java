@@ -5,24 +5,28 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 
+import br.ucamcampos.coolgrade.domain.Discipline;
 import br.ucamcampos.coolgrade.domain.Student;
 import br.ucamcampos.coolgrade.dto.StudentDTO;
-import br.ucamcampos.coolgrade.repositories.DisciplineRepository;
 import br.ucamcampos.coolgrade.repositories.StudentRepository;
 
+@Service
 public class StudentService {
 
 	@Autowired
 	private StudentRepository repo;
 
 	@Autowired
-	private DisciplineRepository disciplineRepository;
+	private DisciplineService disciplineService;
 
 	public Student insert(Student obj) {
 		obj.setId(null);
 		obj = repo.save(obj);
-		disciplineRepository.saveAll(obj.getDisciplines());
+		for(Discipline discObj : obj.getDisciplines()) {
+			disciplineService.insert(discObj);
+		}
 		return obj;
 	}
 
@@ -37,7 +41,7 @@ public class StudentService {
 		try {
 			repo.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
-			//throw new DataIntegrityException("Não é possível excluir porque há relacionados");
+			//TODO throw new DataIntegrityException("Não é possível excluir porque há relacionados");
 		}
 	}
 
@@ -57,6 +61,10 @@ public class StudentService {
 	private void updateData(Student newObj, Student obj) {
 		newObj.setName(obj.getName());
 		newObj.setEmail(obj.getEmail());
+		for(Discipline discObj : obj.getDisciplines()) {
+			if (discObj.getId() == null) disciplineService.insert(discObj);
+			disciplineService.update(discObj);
+		}
 	}
 
 }
