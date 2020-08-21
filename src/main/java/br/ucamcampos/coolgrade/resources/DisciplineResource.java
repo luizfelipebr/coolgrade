@@ -1,5 +1,7 @@
 package br.ucamcampos.coolgrade.resources;
 
+import java.net.URI;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.ucamcampos.coolgrade.domain.Discipline;
+import br.ucamcampos.coolgrade.dto.DisciplineDTO;
+import br.ucamcampos.coolgrade.dto.DisciplineNewDTO;
 import br.ucamcampos.coolgrade.services.DisciplineService;
 
 @RestController
@@ -26,8 +31,17 @@ public class DisciplineResource {
 		return ResponseEntity.ok().body(obj);
 	}
 
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> insertDiscipline(@Valid @RequestBody DisciplineNewDTO objDto) {
+		Discipline obj = service.fromDTO(objDto);
+		obj = service.insert(obj);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+		return ResponseEntity.created(uri).build();
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Void> update(@Valid @RequestBody Discipline obj, @PathVariable Integer id) {
+	public ResponseEntity<Void> update(@Valid @RequestBody DisciplineDTO objDto, @PathVariable Integer id) {
+		Discipline obj = service.fromDTO(objDto);
 		obj.setId(id);
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();

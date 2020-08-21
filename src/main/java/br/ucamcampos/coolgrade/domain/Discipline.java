@@ -123,6 +123,19 @@ public class Discipline implements Serializable {
 		
 		return maxAvg;
 	}
+	
+	public String getStatus() {
+		double maxAvg = getAverageGradeMax();
+		if (maxAvg < 6.0) {
+			return "OMG! Não vai dar!";
+		}
+		else if (maxAvg >= 6.0 && maxAvg <7.0) {
+			return "UFFA! Será por pouco.";
+		}
+		else{
+			return "OH YEAH! Partiu comemorar!";
+		}
+	}
 
 	@Override
 	public int hashCode() {

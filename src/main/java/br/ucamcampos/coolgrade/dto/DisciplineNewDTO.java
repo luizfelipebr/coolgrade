@@ -8,14 +8,11 @@ import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
 
-import br.ucamcampos.coolgrade.domain.Discipline;
-import br.ucamcampos.coolgrade.services.validation.DisciplineUpdate;
+import br.ucamcampos.coolgrade.services.validation.DisciplineInsert;
 
-@DisciplineUpdate
-public class DisciplineDTO implements Serializable {
+@DisciplineInsert
+public class DisciplineNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private Integer id;
 
 	@NotEmpty(message = "Preenchimento obrigatório")
 	@Length(min = 3, max = 120, message = "O tamanho deve ser entre 3 e 120 caracteres")
@@ -24,39 +21,33 @@ public class DisciplineDTO implements Serializable {
 	@DecimalMax("10.00")
 	@DecimalMin("00.00")
 	private double grade1;
-	
+
 	@DecimalMax("10.00")
 	@DecimalMin("00.00")
 	private double grade2;
-	
+
 	@DecimalMax("10.00")
 	@DecimalMin("00.00")
 	private double grade3;
-	
+
 	@DecimalMax("10.00")
 	@DecimalMin("00.00")
 	private double gradePcl;
-	
-	
 
-	public DisciplineDTO() {
+	private Integer student_id;
+
+	public DisciplineNewDTO() {
 	}
 
-	public DisciplineDTO(Discipline obj) {
-		this.id = obj.getId();
-		this.name = obj.getName();
-		this.grade1 = obj.getGrade1();
-		this.grade2 = obj.getGrade2();
-		this.grade3 = obj.getGrade3();
-		this.gradePcl = obj.getGradePcl();
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
+	public DisciplineNewDTO(String name, double grade1, double grade2, double grade3, double gradePcl,
+			Integer student_id) {
+		super();
+		this.name = name;
+		this.grade1 = grade1;
+		this.grade2 = grade2;
+		this.grade3 = grade3;
+		this.gradePcl = gradePcl;
+		this.student_id = student_id;
 	}
 
 	public String getName() {
@@ -99,4 +90,12 @@ public class DisciplineDTO implements Serializable {
 		this.gradePcl = gradePcl;
 	}
 
+	public Integer getStudent_id() {
+		return student_id;
+	}
+
+	public void setStudent_id(Integer student_id) {
+		this.student_id = student_id;
+	}
+	
 }

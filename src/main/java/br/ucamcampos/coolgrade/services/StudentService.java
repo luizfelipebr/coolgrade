@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import br.ucamcampos.coolgrade.domain.Discipline;
 import br.ucamcampos.coolgrade.domain.Student;
 import br.ucamcampos.coolgrade.dto.StudentDTO;
+import br.ucamcampos.coolgrade.dto.StudentNewDTO;
 import br.ucamcampos.coolgrade.repositories.StudentRepository;
+import br.ucamcampos.coolgrade.services.exceptions.DataIntegrityException;
+import br.ucamcampos.coolgrade.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class StudentService {
@@ -41,7 +44,7 @@ public class StudentService {
 		try {
 			repo.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
-			//TODO throw new DataIntegrityException("Não é possível excluir porque há relacionados");
+			throw new DataIntegrityException("Não é possível excluir porque há entidades relacionadas");
 		}
 	}
 
@@ -51,11 +54,16 @@ public class StudentService {
 
 	public Student find(Integer id) {
 		Optional<Student> obj = repo.findById(id);
+		if(obj.isEmpty()) throw new ObjectNotFoundException("Aluno não encontrado");
 		return obj.orElse(null);
 	}
 
 	public Student fromDTO(StudentDTO objDto) {
-		return new Student( objDto.getId(), objDto.getName(), objDto.getEmail(),null);
+		return new Student(objDto.getId(), objDto.getName(), objDto.getEmail());
+	}
+	
+	public Student fromDTO(StudentNewDTO objDto) {
+		return new Student(null,objDto.getName(), objDto.getEmail());
 	}
 
 	private void updateData(Student newObj, Student obj) {

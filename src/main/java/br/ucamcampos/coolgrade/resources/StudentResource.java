@@ -14,63 +14,49 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import br.ucamcampos.coolgrade.domain.Discipline;
 import br.ucamcampos.coolgrade.domain.Student;
-import br.ucamcampos.coolgrade.services.DisciplineService;
+import br.ucamcampos.coolgrade.dto.StudentDTO;
+import br.ucamcampos.coolgrade.dto.StudentNewDTO;
 import br.ucamcampos.coolgrade.services.StudentService;
 
 @RestController
-@RequestMapping(value="/students")
+@RequestMapping(value = "/students")
 public class StudentResource {
-	
+
 	@Autowired
 	private StudentService service;
-	
-	@Autowired
-	private DisciplineService disciplineService;
-	
-	@RequestMapping(method=RequestMethod.GET)
+
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Student>> findAll() {
 		List<Student> list = service.findAll();
 		return ResponseEntity.ok().body(list);
 	}
-	
-	@RequestMapping(value="/{id}", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Student> find(@PathVariable Integer id) {
 		Student obj = service.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-	
-	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Void> insert(@Valid @RequestBody Student obj) {
+
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> insert(@Valid @RequestBody StudentNewDTO objDto) {
+		Student obj = service.fromDTO(objDto);
 		obj = service.insert(obj);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-				.path("/{id}").buildAndExpand(obj.getId()).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
 
-	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
-	public ResponseEntity<Void> update(@Valid @RequestBody Student obj, @PathVariable Integer id) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Void> update(@Valid @RequestBody StudentDTO objDto, @PathVariable Integer id) {
+		Student obj = service.fromDTO(objDto);
 		obj.setId(id);
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();
 	}
-	
-	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
-	}
-	
-	@RequestMapping(value="/{id}", method=RequestMethod.POST)
-	public ResponseEntity<Void> insertDiscipline(@Valid @RequestBody Discipline obj, @PathVariable Integer id) {
-		Student std = service.find(id);
-		obj.setStudent(std);
-		obj = disciplineService.insert(obj);
-		std.getDisciplines().add(obj);
-		service.update(std);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-				.path("/{id}").buildAndExpand(obj.getId()).toUri();
-		return ResponseEntity.created(uri).build();
 	}
 }

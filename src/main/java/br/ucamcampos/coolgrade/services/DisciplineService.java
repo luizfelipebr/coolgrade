@@ -8,8 +8,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.ucamcampos.coolgrade.domain.Discipline;
+import br.ucamcampos.coolgrade.domain.Student;
 import br.ucamcampos.coolgrade.dto.DisciplineDTO;
+import br.ucamcampos.coolgrade.dto.DisciplineNewDTO;
 import br.ucamcampos.coolgrade.repositories.DisciplineRepository;
+import br.ucamcampos.coolgrade.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class DisciplineService {
@@ -17,9 +20,16 @@ public class DisciplineService {
 	@Autowired
 	private DisciplineRepository repo;
 
+	@Autowired
+	private StudentService studentService;
+
 	public Discipline insert(Discipline obj) {
 		obj.setId(null);
 		obj = repo.save(obj);
+
+		Student studentObj = studentService.find(obj.getStudent().getId());
+		studentObj.getDisciplines().add(obj);
+		studentService.update(studentObj);
 		return obj;
 	}
 
@@ -34,7 +44,8 @@ public class DisciplineService {
 		try {
 			repo.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
-			//TODO throw new DataIntegrityException("Não é possível excluir porque há relacionados");
+			// TODO throw new DataIntegrityException("Não é possível excluir porque há
+			// entidades relacionadas");
 		}
 	}
 
@@ -44,11 +55,20 @@ public class DisciplineService {
 
 	public Discipline find(Integer id) {
 		Optional<Discipline> obj = repo.findById(id);
+		if (obj.isEmpty())
+			throw new ObjectNotFoundException("Disciplina não encontrada");
 		return obj.orElse(null);
 	}
-	
+
 	public Discipline fromDTO(DisciplineDTO objDto) {
-		return new Discipline( objDto.getId(), objDto.getName(),objDto.getGrade1(), objDto.getGrade2(), objDto.getGrade3(),objDto.getGradePcl(), null);
+		return new Discipline(objDto.getId(), objDto.getName(), objDto.getGrade1(), objDto.getGrade2(),
+				objDto.getGrade3(), objDto.getGradePcl(), null);
+	}
+
+	public Discipline fromDTO(DisciplineNewDTO objDto) {
+		Student student = studentService.find(objDto.getStudent_id());
+		return new Discipline(null, objDto.getName(), objDto.getGrade1(), objDto.getGrade2(), objDto.getGrade3(),
+				objDto.getGradePcl(), student);
 	}
 
 	private void updateData(Discipline newObj, Discipline obj) {
