@@ -26,7 +26,7 @@ public class Discipline implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(name = "cliente_id")
+	@JoinColumn(name = "student_id")
 	private Student student;
 
 	public Discipline() {
@@ -127,7 +127,7 @@ public class Discipline implements Serializable {
 	public String getStatus() {
 		double maxAvg = getAverageGradeMax();
 		if (maxAvg < 6.0) {
-			return "OMG! Não vai dar!";
+			return "OMG! Não vai dá!";
 		}
 		else if (maxAvg >= 6.0 && maxAvg <7.0) {
 			return "UFFA! Será por pouco.";
