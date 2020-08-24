@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import br.ucamcampos.coolgrade.services.DisciplineService;
 
 @RestController
 @RequestMapping(value = "/disciplines")
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "Location")
 public class DisciplineResource {
 
 	@Autowired
@@ -32,19 +34,19 @@ public class DisciplineResource {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> insertDiscipline(@Valid @RequestBody DisciplineNewDTO objDto) {
+	public ResponseEntity<Discipline> insertDiscipline(@Valid @RequestBody DisciplineNewDTO objDto) {
 		Discipline obj = service.fromDTO(objDto);
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-		return ResponseEntity.created(uri).build();
+		return ResponseEntity.created(uri).body(obj);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Void> update(@Valid @RequestBody DisciplineDTO objDto, @PathVariable Integer id) {
+	public ResponseEntity<Discipline> update(@Valid @RequestBody DisciplineDTO objDto, @PathVariable Integer id) {
 		Discipline obj = service.fromDTO(objDto);
 		obj.setId(id);
 		obj = service.update(obj);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().body(obj);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
