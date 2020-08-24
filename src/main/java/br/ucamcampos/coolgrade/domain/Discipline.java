@@ -67,6 +67,10 @@ public class Discipline implements Serializable {
 	public void setStudent(Student student) {
 		this.student = student;
 	}
+	
+	public Integer getStudent_id() {
+		return this.student != null? this.student.getId() : null ;
+	}
 
 	public double getGrade1() {
 		return grade1;
@@ -127,7 +131,7 @@ public class Discipline implements Serializable {
 	public String getStatus() {
 		double maxAvg = getAverageGradeMax();
 		if (maxAvg < 6.0) {
-			return "OMG! Não vai dá!";
+			return "OMG! Não vai dar!";
 		}
 		else if (maxAvg >= 6.0 && maxAvg <7.0) {
 			return "UFFA! Será por pouco.";
